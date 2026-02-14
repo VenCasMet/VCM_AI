@@ -1,0 +1,5 @@
+PyQt5
+pyttsx3
+psutil
+SpeechRecognition
+langchain-ollama
