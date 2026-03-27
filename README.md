@@ -2,6 +2,9 @@
 
 🧠 A standalone offline desktop AI agent for Windows with voice interaction, local LLM intelligence, long-term memory, smart file search, and system automation — distributed as a professional installer.
 
+Setup Install-
+        
+        https://github.com/VenCasMet/VCM_AI/releases/download/v1.0/VCM_Setup.exe
 ## 🏆 Overview
 
 VCMtalker AI Assistant is a fully functional Windows desktop application that brings conversational AI directly to the user’s computer without relying on cloud APIs.
