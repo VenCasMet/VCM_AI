@@ -1,1 +1,2 @@
 my username vencasmet
+User's favorite programming language is Python and framework is PyQt5
