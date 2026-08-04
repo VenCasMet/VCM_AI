@@ -1,3 +1,5 @@
+import re
+
 from core.ai_programmer import AIProgrammer
 from core.code_executor import CodeExecutor
 from core.dependency_manager import DependencyManager
@@ -13,9 +15,27 @@ class AutoProgrammer:
 
     ########################################################
 
+    def clean_code(self, text):
+
+        text = text.strip()
+
+        match = re.search(
+            r"```(?:python|cpp|c\+\+|java|javascript|js|html|css|json)?\s*(.*?)```",
+            text,
+            re.DOTALL | re.IGNORECASE,
+        )
+
+        if match:
+            return match.group(1).strip()
+
+        return text
+
+    ########################################################
+
     def build(self, filepath, prompt, retries=3):
 
         code = self.ai.generate(prompt)
+        code = self.clean_code(code)
 
         ok, message = self.executor.create_python_file(
             filepath,
@@ -49,10 +69,6 @@ class AutoProgrammer:
             # AUTO INSTALL MISSING MODULE
             ####################################################
 
-            ####################################################
-            # AUTO INSTALL MISSING MODULE
-            ####################################################
-
             if "ModuleNotFoundError" in output:
 
                 installed, module = self.dependencies.auto_install(output)
@@ -75,18 +91,10 @@ class AutoProgrammer:
                         return True, success
 
                     last_error = output
-
                     continue
 
-                else:
-
-                    last_error = output
-
-                    continue
-
-            ####################################################
-            # AI FIX
-            ####################################################
+                last_error = output
+                continue
 
             ####################################################
             # AI FIX
@@ -102,25 +110,19 @@ class AutoProgrammer:
             print(f"[AutoProgrammer] AI Fix Attempt {attempt + 1}")
 
             fixed_code = self.ai.fix(
-
                 current_code,
-
                 last_error
-
             )
 
+            fixed_code = self.clean_code(fixed_code)
+
             ok, message = self.executor.overwrite(
-
                 filepath,
-
                 fixed_code
-
             )
 
             if not ok:
                 return False, message
-
-            continue
 
         ####################################################
         # FINAL RUN
@@ -165,6 +167,7 @@ class AutoProgrammer:
             return False, code
 
         improved = self.ai.improve(code)
+        improved = self.clean_code(improved)
 
         ok, message = self.executor.overwrite(
             filepath,
@@ -188,5 +191,7 @@ class AutoProgrammer:
     ########################################################
 
     def overwrite(self, filepath, code):
+
+        code = self.clean_code(code)
 
         return self.executor.overwrite(filepath, code)

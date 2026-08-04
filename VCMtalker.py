@@ -198,14 +198,15 @@ class AssistantApp(QWidget):
         self.input = self.commandBar.input
 
         self.send_btn = self.commandBar.sendBtn
+        self.mic_btn = self.commandBar.micBtn
 
         self.send_btn.clicked.connect(
-        self.handle_command
+            self.handle_command
         )
 
         self.input.returnPressed.connect(
             self.handle_command
-        )
+    )
 
         self.status_label = QLabel("🟢 Status: Ready (RAG Vector Store Active)")
         self.status_label.setFont(QFont("Segoe UI", 9, QFont.StyleItalic))
@@ -308,9 +309,9 @@ Press the microphone or type below to begin.
 
         self.input = self.commandBar.input
 
-        self.send_btn = self.commandBar.sendBtn
+        send_btn = self.commandBar.sendBtn
 
-        self.send_btn.clicked.connect(
+        send_btn.clicked.connect(
             self.handle_command
         )
 
@@ -324,8 +325,7 @@ Press the microphone or type below to begin.
         action_layout.addWidget(QLabel("Model"))
         action_layout.addWidget(self.model_selector)
 
-        voice_btn = self.commandBar.micBtn
-        voice_btn.clicked.connect(self.start_voice_input)
+        self.mic_btn.clicked.connect(self.start_voice_input)
 
         memory_btn = QPushButton("🧠 View Memories")
         memory_btn.clicked.connect(self.view_memories)
@@ -1717,12 +1717,6 @@ border-radius:12px;
 
             self.send_btn.setEnabled(False)
 
-            self.send_btn.setText(
-
-                "Thinking..."
-
-            )
-
             self.input.setEnabled(False)
 
             print("LLM 1")
@@ -1762,7 +1756,6 @@ border-radius:12px;
         self.busy = False
 
         self.send_btn.setEnabled(True)
-        self.send_btn.setText("Send")
         self.input.setEnabled(True)
 
         self.update_status("🟢 Status: Ready", "#81c784")
@@ -1782,7 +1775,6 @@ border-radius:12px;
         self.hideTyping()
         self.busy = False
         self.send_btn.setEnabled(True)
-        self.send_btn.setText("Send")
         self.input.setEnabled(True)
         self.update_status("🔴 Status: LLM Error", "#e57373")
         self.chat.append(f"<div style='color: #e57373;'><b>Error:</b> {err}</div><br>")

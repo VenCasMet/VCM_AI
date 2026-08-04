@@ -55,6 +55,9 @@ class CommandBar(QWidget):
         self.micBtn.setIconSize(QSize(24, 24))
         self.sendBtn.setIconSize(QSize(24, 24))
 
+        self.micBtn.setText("")
+        self.sendBtn.setText("")
+
         self.micBtn.setToolTip("Voice Input")
         self.sendBtn.setToolTip("Send Message")
 
