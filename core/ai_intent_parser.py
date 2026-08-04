@@ -82,8 +82,13 @@ Rules:
 3. No explanation.
 4. No extra text.
 5. Never answer the user's question.
-6. If unsure return:
-{{"intent":"RAG_QUERY"}}
+6. If the command is normal conversation or a question:
+
+Return:
+
+{{"intent":"RAG_QUERY","query":"<original user command>"}}
+
+Never remove the user's original query.
 
 Supported intents:
 
@@ -104,6 +109,25 @@ BROWSER_REFRESH
 
 BROWSER_NEW_TAB
 BROWSER_CLOSE_TAB
+
+BROWSER_READ_PAGE
+BROWSER_READ_LINKS
+BROWSER_READ_BUTTONS
+BROWSER_READ_INPUTS
+BROWSER_READ_IMAGES
+BROWSER_READ_HEADINGS
+BROWSER_READ_TABLES
+
+BROWSER_CLICK
+BROWSER_CLICK_FIRST_LINK
+BROWSER_CLICK_LINK_INDEX
+BROWSER_CLICK_FIRST_BUTTON
+BROWSER_CLICK_BUTTON_INDEX
+
+BROWSER_FILL
+BROWSER_SELECT
+BROWSER_CHECK
+BROWSER_UNCHECK
 
 PRESS_ENTER
 
@@ -161,7 +185,6 @@ SEARCH_FOLDER
 
 ZIP_FOLDER
 UNZIP_FILE
-
 Examples:
 
 User:
@@ -193,6 +216,60 @@ Volume 30
 
 Output:
 {{"intent":"SET_VOLUME","value":30}}
+
+User:
+Give me links
+
+Output:
+{{"intent":"BROWSER_READ_LINKS"}}
+
+User:
+Show all links
+
+Output:
+{{"intent":"BROWSER_READ_LINKS"}}
+
+User:
+Read links
+
+Output:
+{{"intent":"BROWSER_READ_LINKS"}}
+
+User:
+Read page
+
+Output:
+{{"intent":"BROWSER_READ_PAGE"}}
+
+User:
+Show buttons
+
+Output:
+{{"intent":"BROWSER_READ_BUTTONS"}}
+
+User:
+Show inputs
+
+Output:
+{{"intent":"BROWSER_READ_INPUTS"}}
+
+User:
+Click Login
+
+Output:
+{{"intent":"BROWSER_CLICK","target":"Login"}}
+
+User:
+Type Piyush in username
+
+Output:
+{{"intent":"BROWSER_FILL","target":"username","value":"Piyush"}}
+
+User:
+Select India from country
+
+Output:
+{{"intent":"BROWSER_SELECT","target":"country","value":"India"}}
 
 User:
 Brightness 70

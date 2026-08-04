@@ -1,5 +1,6 @@
 import os
 import datetime
+import traceback
 from typing import List, Dict, Any, Tuple
 
 # Direct import to bypass PyTorch/sentence_transformers dependency
@@ -38,7 +39,11 @@ class RAGEngine:
         try:
             # First attempt: Ollama embeddings
             self.embeddings = OllamaEmbeddings(model="nomic-embed-text")
-            self.embeddings.embed_query("test connection")
+            try:
+                self.embeddings = OllamaEmbeddings(model="nomic-embed-text")
+            except Exception:
+                print("[RAGEngine] Using ONNX Runtime Embeddings (torch-free).")
+                self.embeddings = ONNXEmbeddings()
             print("[RAGEngine] Using Ollama Embeddings (nomic-embed-text).")
         except Exception:
             # Robust Torch-free ONNX Embeddings fallback
@@ -86,9 +91,9 @@ class RAGEngine:
         try:
             results = self.memory_store.similarity_search(query, k=k)
             return [doc.page_content for doc in results]
-        except Exception as e:
-            print(f"[RAGEngine] Memory search note: {e}")
-            return []
+        except Exception:
+            traceback.print_exc()
+        return []
 
     def get_all_memories(self) -> List[str]:
         """Returns all raw memories stored in vector store or fallback file."""
@@ -150,8 +155,9 @@ class RAGEngine:
         try:
             results = self.knowledge_store.similarity_search(query, k=k)
             return [(doc.page_content, doc.metadata.get("source", "Unknown")) for doc in results]
-        except Exception as e:
-            print(f"[RAGEngine] Document search note: {e}")
+        
+        except Exception:
+            traceback.print_exc()
             return []
 
     def auto_index_project_docs(self):
@@ -162,9 +168,24 @@ class RAGEngine:
 
     # ===== PROMPT BUILDING =====
     def build_rag_prompt(self, query: str) -> str:
-        """Builds a context-rich prompt incorporating vector memories and RAG document context."""
+
+        return f"""You are VCMtalker AI.
+
+            User Question:
+            {query}
+
+            Answer naturally.
+"""
+        
+        print("RAG 1")
+
         memories = self.get_relevant_memories(query, k=3)
+
+        print("RAG 2")
+
         doc_chunks = self.get_relevant_documents(query, k=3)
+
+        print("RAG 3")
 
         context_parts = []
         

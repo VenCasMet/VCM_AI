@@ -15,7 +15,7 @@ class BrowserRouter:
             r"^select ",
             r"^(check|tick) ",
             r"^(uncheck|untick) ",
-            r"^read ",
+            r"^(read|show|list|tell me|display) ",
             r"^scroll ",
             r"^take screenshot$",
             r"^screenshot$",
@@ -234,15 +234,31 @@ class BrowserRouter:
 
             return ("BROWSER_READ_IMAGES", {})
 
-        if lower == "read links":
-
+        if (
+            lower == "read links"
+            or "all links" in lower
+            or "links present" in lower
+            or "show links" in lower
+            or "list links" in lower
+            or "display links" in lower
+            or "tell me the links" in lower
+            or "tell me all the links" in lower
+        ):
             return ("BROWSER_READ_LINKS", {})
 
-        if lower == "read buttons":
-
+        if (
+            lower == "read buttons"
+            or "all buttons" in lower
+            or "buttons present" in lower
+            or "show buttons" in lower
+        ):
             return ("BROWSER_READ_BUTTONS", {})
-
-        if lower == "read inputs":
+        if (
+            lower == "read inputs"
+            or "all inputs" in lower
+            or "input fields" in lower
+            or "text fields" in lower
+        ):
 
             return ("BROWSER_READ_INPUTS", {})
 

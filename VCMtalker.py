@@ -1,6 +1,7 @@
 import sys
 import os
 import threading
+from turtle import title
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout,
     QTextEdit, QLineEdit, QPushButton, QLabel, QFileDialog, QComboBox, QMessageBox
@@ -22,14 +23,32 @@ from core.native_hotkey import NativeHotkey
 from core.tray_manager import TrayManager
 from PyQt5.QtWidgets import QSystemTrayIcon
 from core.single_instance import SingleInstance
-
+from widgets.command_bar import CommandBar
+from PyQt5.QtWidgets import QGraphicsDropShadowEffect
+from PyQt5.QtGui import QColor
+from PyQt5.QtWidgets import (
+    QScrollArea,
+    QScrollArea,
+    QFrame
+)
+from widgets.chat_bubble import ChatBubble
+from PyQt5.QtCore import QPropertyAnimation
+from PyQt5.QtCore import QTimer
 
 class AssistantApp(QWidget):
 
     def __init__(self):
         super().__init__()
+        print("INIT 1")
+
         self.rag_engine = RAGEngine(ollama_model="qwen2.5:7b")
-        self.rag_engine.auto_index_project_docs()
+
+        print("INIT 2")
+
+        # self.rag_engine.auto_index_project_docs()
+
+        print("INIT 3")
+        
         self.voice_worker = None
         self.llm_worker = None
         self.tts_worker = None
@@ -85,7 +104,11 @@ class AssistantApp(QWidget):
             "Terminal"
         )
 
+        print("INIT 4")
+
         self.init_ui()
+
+        print("INIT 5")
         self.intent_router = IntentRouter(
             self.model_selector.currentText()
         )
@@ -129,153 +152,230 @@ class AssistantApp(QWidget):
             print(e)
 
     def init_ui(self):
-        self.setWindowFlags(Qt.FramelessWindowHint | Qt.Window)
-        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlags(Qt.Window)
         self.setWindowTitle("VCMtalker AI Assistant")
         self.setGeometry(200, 100, 780, 680)
+        self.model_selector = QComboBox()
+        self.model_selector.addItems([
+            "qwen2.5:7b",
+            "gemma:2b"
+        ])
+        self.model_selector.currentTextChanged.connect(
+            self.change_model
+        )
+
+        self.voice_toggle = QPushButton("🔊 Voice ON")
+        self.voice_toggle.setCheckable(True)
+        self.voice_toggle.setChecked(True)
+        self.voice_toggle.clicked.connect(
+            self.toggle_voice
+        )
         
         icon_path = os.path.join(os.path.dirname(__file__), "VCMtalker.ico")
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
 
         main_layout = QVBoxLayout(self)
+        main_layout.setSpacing(0)
 
         container = QWidget()
+        container.setContentsMargins(0,0,0,0)
         container.setObjectName("container")
+        
+
+        shadow = QGraphicsDropShadowEffect(self)
+        shadow.setBlurRadius(35)
+        shadow.setOffset(0,0)
+        shadow.setColor(QColor(0,0,0,180))
+
+        container.setGraphicsEffect(shadow)
         layout = QVBoxLayout(container)
-        header_layout = QHBoxLayout()
+        layout.setContentsMargins(24, 24, 24, 18)
+        layout.setSpacing(10)
+        self.commandBar = CommandBar()
 
-        title = QLabel("🤖 VCMtalker AI Assistant")
-        title.setFont(QFont("Segoe UI", 18, QFont.Bold))
+        self.input = self.commandBar.input
 
-        self.model_selector = QComboBox()
-        self.model_selector.addItems(["qwen2.5:7b", "gemma:2b"])
-        self.model_selector.currentTextChanged.connect(
-    self.change_model
-)
-        self.model_selector.setFont(QFont("Segoe UI", 10))
-        self.voice_toggle = QPushButton("🔊 Voice ON")
-        self.voice_toggle.setChecked(True)
-        self.voice_toggle.setCheckable(True)
-        self.voice_toggle.clicked.connect(self.toggle_voice)
+        self.send_btn = self.commandBar.sendBtn
 
-        close_btn = QPushButton("✕")
-        close_btn.setFixedSize(30, 30)
-        close_btn.setObjectName("close_btn")
-        close_btn.clicked.connect(self.close)
+        self.send_btn.clicked.connect(
+        self.handle_command
+        )
 
-        header_layout.addWidget(title)
-        header_layout.addStretch()
-        header_layout.addWidget(QLabel("Model:"))
-        header_layout.addWidget(self.model_selector)
-
-        header_layout.addSpacing(10)
-        header_layout.addWidget(self.voice_toggle)
-
-        header_layout.addWidget(close_btn)
+        self.input.returnPressed.connect(
+            self.handle_command
+        )
 
         self.status_label = QLabel("🟢 Status: Ready (RAG Vector Store Active)")
         self.status_label.setFont(QFont("Segoe UI", 9, QFont.StyleItalic))
         self.status_label.setStyleSheet("color: #81c784; padding-bottom: 4px;")
 
+        self.chatContainer = QWidget()
+
+        self.chatLayout = QVBoxLayout(self.chatContainer)
+
+        self.chatLayout.setSpacing(12)
+
+        self.chatLayout.setContentsMargins(12,12,12,12)
+
+        self.chatLayout.addStretch()
+
         self.chat = QTextEdit()
+        self.chat.setFrameShape(QFrame.NoFrame)
+        self.chat.document().setDocumentMargin(20)
+        self.chat.setAcceptRichText(True)
+        self.chat.setUndoRedoEnabled(False)
+        self.chat.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.chat.setMinimumHeight(520)
         self.chat.setReadOnly(True)
+        self.chatArea = QScrollArea()
+
+        self.chatArea.setWidgetResizable(True)
+
+        self.chatArea.setWidget(self.chatContainer)
+
+        self.chatArea.setFrameShape(QFrame.NoFrame)
         self.chat.setFont(QFont("Segoe UI", 10))
 
-        self.chat.append(
-            "<div style='color: #4fc3f7; font-size: 14px;'><b>🤖 Welcome to VCMtalker AI!</b><br>"
-            "I am equipped with <b>Vector Database RAG</b> for intelligent memory and document searching.<br>"
-            "You can ask me questions, index files (PDF/DOCX/TXT), search local files, or manage your system.</div><br>"
-        )
+        self.chat.setHtml("""
+<div style="padding:12px">
+
+<div style="
+font-size:22px;
+font-weight:700;
+color:#4FC3F7;
+">
+🤖 VCM AI
+</div>
+
+<div style="
+margin-top:6px;
+font-size:13px;
+color:#8FA3BF;
+">
+Offline Desktop AI Assistant
+</div>
+
+<hr style="border:1px solid #2B3242;margin-top:16px;margin-bottom:18px;">
+
+<div style="
+background:#151B26;
+border:1px solid #273245;
+border-radius:10px;
+padding:14px;
+">
+
+<div style="color:#6EC6FF;font-size:15px;">
+✓ Voice Commands
+</div>
+
+<div style="color:#6EC6FF;font-size:15px;">
+✓ Local LLM
+</div>
+
+<div style="color:#6EC6FF;font-size:15px;">
+✓ Browser Automation
+</div>
+
+<div style="color:#6EC6FF;font-size:15px;">
+✓ System Control
+</div>
+
+<div style="color:#6EC6FF;font-size:15px;">
+✓ RAG Memory
+</div>
+
+<div style="color:#6EC6FF;font-size:15px;">
+✓ File Assistant
+</div>
+
+</div>
+
+<div style="
+margin-top:18px;
+color:#6B7D95;
+font-size:13px;
+">
+
+Press the microphone or type below to begin.
+
+</div>
+
+</div>
+""")
         self.scroll_to_bottom()
 
-        input_layout = QHBoxLayout()
-        self.input = QLineEdit()
-        self.input.setPlaceholderText("Type your question or command here...")
-        self.input.setFont(QFont("Segoe UI", 11))
-        self.input.returnPressed.connect(self.handle_command)
+        self.input = self.commandBar.input
 
-        self.send_btn = QPushButton("Send")
-        self.send_btn.clicked.connect(self.handle_command)
+        self.send_btn = self.commandBar.sendBtn
 
-        input_layout.addWidget(self.input)
-        input_layout.addWidget(self.send_btn)
+        self.send_btn.clicked.connect(
+            self.handle_command
+        )
+
+        self.input.returnPressed.connect(
+            self.handle_command
+        )
 
         action_layout = QHBoxLayout()
+        action_layout.setSpacing(12)
 
-        voice_btn = QPushButton("🎤 Voice Command")
+        action_layout.addWidget(QLabel("Model"))
+        action_layout.addWidget(self.model_selector)
+
+        voice_btn = self.commandBar.micBtn
         voice_btn.clicked.connect(self.start_voice_input)
-
-        index_btn = QPushButton("📁 Index Document")
-        index_btn.clicked.connect(self.index_document_dialog)
 
         memory_btn = QPushButton("🧠 View Memories")
         memory_btn.clicked.connect(self.view_memories)
 
         clear_btn = QPushButton("🧹 Clear Chat")
         clear_btn.clicked.connect(self.clear_chat)
-        
 
-        action_layout.addWidget(voice_btn)
-        action_layout.addWidget(index_btn)
+        action_layout.addWidget(self.voice_toggle)
         action_layout.addWidget(memory_btn)
         action_layout.addWidget(clear_btn)
 
-        layout.addLayout(header_layout)
+# Push everything to the left and keep only remaining space at the end
+        action_layout.addStretch()
+
         layout.addWidget(self.status_label)
-        layout.addWidget(self.chat)
-        layout.addLayout(input_layout)
         layout.addLayout(action_layout)
+        self.chatTitle = QLabel("New Conversation")
+        self.chatTitle.setObjectName("chatTitle")
+
+        layout.addWidget(self.chatTitle)
+        layout.addWidget(self.chatArea,1)
+        layout.addWidget(self.commandBar)
+        
 
         main_layout.addWidget(container)
 
-        self.setStyleSheet("""
-        #container {
-            background-color: rgba(25, 28, 36, 235);
-            border: 1px solid rgba(255, 255, 255, 30);
-            border-radius: 16px;
-            padding: 12px;
-        }
-        QLabel { color: #ffffff; }
-        QTextEdit {
-            background-color: rgba(15, 18, 24, 180);
-            border: 1px solid rgba(255, 255, 255, 20);
-            border-radius: 12px;
-            padding: 12px;
-            color: #e0e0e0;
-        }
-        QLineEdit {
-            background-color: rgba(15, 18, 24, 200);
-            border: 1px solid rgba(41, 121, 255, 150);
-            border-radius: 10px;
-            padding: 8px 12px;
-            color: white;
-        }
-        QComboBox {
-            background-color: rgba(40, 44, 56, 220);
-            color: white;
-            border-radius: 6px;
-            padding: 4px 8px;
-        }
-        QPushButton {
-            background-color: rgba(41, 121, 255, 200);
-            border-radius: 10px;
-            padding: 8px 14px;
-            font-weight: bold;
-            color: white;
-        }
-        QPushButton:hover {
-            background-color: rgba(83, 147, 255, 230);
-        }
-        #close_btn {
-            background-color: rgba(244, 67, 54, 180);
-            border-radius: 15px;
-            font-weight: bold;
-        }
-        #close_btn:hover {
-            background-color: rgba(244, 67, 54, 230);
-        }
-        """)
+        theme = os.path.join(
+
+            os.path.dirname(__file__),
+
+            "styles",
+
+            "theme.qss"
+
+        )
+
+        with open(
+
+            theme,
+
+            "r",
+
+            encoding="utf-8"
+
+        ) as f:
+
+            self.setStyleSheet(
+
+            f.read()
+
+        )
 
     def clear_chat(self):
     
@@ -348,6 +448,68 @@ class AssistantApp(QWidget):
 
         scrollbar.setValue(scrollbar.maximum())
 
+    def addBubble(self, title, text, user=False):
+        bubble = ChatBubble(title, text, user)
+
+        self.chatLayout.insertWidget(
+            self.chatLayout.count() - 1,
+            bubble
+        )
+        bubble.setWindowOpacity(0)
+
+        anim = QPropertyAnimation(
+            bubble,
+            b"windowOpacity"
+        )
+
+        anim.setDuration(180)
+
+        anim.setStartValue(0)
+
+        anim.setEndValue(1)
+
+        anim.start()
+
+        self._bubble_animation = anim
+
+        QApplication.processEvents()
+
+        self.chatArea.verticalScrollBar().setValue(
+            self.chatArea.verticalScrollBar().maximum()
+        )
+
+    def showTyping(self):
+
+        if hasattr(self, "typingBubble"):
+           return
+
+        self.typingBubble = ChatBubble(
+            "🤖 VCM AI",
+            "<i>Thinking...</i>"
+        )
+
+        self.chatLayout.insertWidget(
+            self.chatLayout.count() - 1,
+            self.typingBubble
+        )
+
+        QApplication.processEvents()
+
+        self.chatArea.verticalScrollBar().setValue(
+           self.chatArea.verticalScrollBar().maximum()
+        )
+
+
+    def hideTyping(self):
+
+        if hasattr(self, "typingBubble"):
+
+            self.chatLayout.removeWidget(self.typingBubble)
+
+            self.typingBubble.deleteLater()
+
+            del self.typingBubble
+
     def update_status(self, text: str, color: str = "#81c784"):
         self.status_label.setText(text)
         self.status_label.setStyleSheet(f"color: {color}; padding-bottom: 4px;")
@@ -356,14 +518,32 @@ class AssistantApp(QWidget):
         if self.busy:
             self.update_status("⏳ Please wait...", "#ffb74d")
             return
+
         command = self.input.text().strip()
+        if self.chatTitle.text() == "New Conversation":
+            title = command[:40].strip()
+
+            if len(command) > 40:
+                title += "..."
+
+                self.chatTitle.setText(title)
+
         if not command:
             return
 
-        self.chat.append(f"<div style='color: #90caf9;'><b>You:</b> {command}</div>")
-        self.scroll_to_bottom()
+        self.addBubble(
+            "You",
+            command,
+            True
+        )
+
         self.input.clear()
+
+        print("CMD 1")
+
         self.process_command(command)
+
+        print("CMD 2")
 
     def start_voice_input(self):
         self.update_status("🎤 Status: Listening...", "#ffb74d")
@@ -378,7 +558,19 @@ class AssistantApp(QWidget):
     @pyqtSlot(str)
     def on_voice_recognized(self, text: str):
         self.update_status("🟢 Status: Speech Recognized", "#81c784")
-        self.chat.append(f"<div style='color: #90caf9;'><b>You (Voice):</b> {text}</div>")
+        self.chat.append(f"""
+<div style="margin:12px 0;">
+<div style="
+background:#2563EB;
+color:white;
+padding:12px;
+border-radius:12px;
+">
+<b>🎤 You</b><br><br>
+{text}
+</div>
+</div>
+""")
         self.scroll_to_bottom()
         self.process_command(text)
 
@@ -397,7 +589,37 @@ class AssistantApp(QWidget):
 
     def process_command(self, command: str):
 
+        lower = command.lower().strip()
+
+        if lower in [
+            "exit",
+            "quit",
+            "bye",
+            "goodbye",
+            "close assistant",
+            "shutdown assistant"
+        ]:
+
+            self.display_and_speak_response(
+                "👋 Goodbye! Have a great day."
+            )
+
+
+            QTimer.singleShot(
+                2500,
+                self.hide
+            )
+
+            return
+
+        print("PROCESS 1")
+
         intent, payload = self.intent_router.route(command)
+        print("P1")
+        print("=" * 60)
+        print(intent)
+        print(payload)
+        print("=" * 60)
 
         if intent == "CREATE_PROGRAM":
 
@@ -819,7 +1041,7 @@ class AssistantApp(QWidget):
 
             ok, msg = self.browser.google_search(
 
-                payload["query"]
+                payload.get("query", "")
 
             )
 
@@ -831,7 +1053,7 @@ class AssistantApp(QWidget):
 
             ok, msg = self.browser.youtube_search(
 
-                payload["query"]
+                payload.get("query", "")
 
             )
 
@@ -844,7 +1066,7 @@ class AssistantApp(QWidget):
 
                 "https://github.com/search?q=" +
 
-                payload["query"].replace(
+                payload.get("query", "").replace(
 
                     " ",
 
@@ -878,7 +1100,7 @@ class AssistantApp(QWidget):
 
                 "https://en.wikipedia.org/wiki/Special:Search?search=" +
 
-                payload["query"].replace(
+                payload.get("query", "").replace(
 
                     " ",
 
@@ -937,7 +1159,7 @@ class AssistantApp(QWidget):
 
             ok, msg = self.browser.search_google_box(
 
-                payload["query"]
+                payload.get("query", "")
 
             )
 
@@ -949,7 +1171,7 @@ class AssistantApp(QWidget):
 
             ok, msg = self.browser.search_youtube_box(
 
-                payload["query"]
+                payload.get("query", "")
 
             )
 
@@ -987,7 +1209,7 @@ class AssistantApp(QWidget):
 
             self.display_and_speak_response(
 
-                payload["message"]
+                payload.get("message", "No message provided")
 
             )
 
@@ -1471,6 +1693,8 @@ class AssistantApp(QWidget):
 
         if intent == "RAG_QUERY":
 
+            print("P2")
+
             self.update_status(
 
                 "🧠 Thinking...",
@@ -1479,11 +1703,14 @@ class AssistantApp(QWidget):
 
             )
 
-            prompt = self.rag_engine.build_rag_prompt(
+            print("P3")
 
-                command
 
-            )
+            query = payload.get("query", command)
+
+            prompt = self.rag_engine.build_rag_prompt(query)
+
+            print("P4")
 
             self.busy = True
 
@@ -1497,6 +1724,8 @@ class AssistantApp(QWidget):
 
             self.input.setEnabled(False)
 
+            print("LLM 1")
+
             self.llm_worker = LLMWorker(
 
                 prompt=prompt,
@@ -1504,6 +1733,8 @@ class AssistantApp(QWidget):
                 model_name=self.model_selector.currentText()
 
             )
+
+            print("LLM 2")
 
             self.llm_worker.result_signal.connect(
 
@@ -1516,22 +1747,38 @@ class AssistantApp(QWidget):
                 self.on_llm_error
 
             )
+            print("P5")
+            self.showTyping()
+            print("START THREAD")
             self.llm_worker.start()
+            print("P6")
+            print("THREAD STARTED")
 
     @pyqtSlot(str)
     def on_llm_success(self, response: str):
+        print("SUCCESS")
+        self.hideTyping()
         self.busy = False
+
         self.send_btn.setEnabled(True)
         self.send_btn.setText("Send")
         self.input.setEnabled(True)
+
         self.update_status("🟢 Status: Ready", "#81c784")
+
         formatted_resp = response.replace("\n", "<br>")
-        self.chat.append(f"<div style='color: #a5d6a7;'><b>VCMtalker:</b><br>{formatted_resp}</div><br>")
-        self.scroll_to_bottom()
+
+        self.addBubble(
+            "🤖 VCM AI",
+            formatted_resp,
+            False
+        )
+
         self.speak_bg(response)
 
     @pyqtSlot(str)
     def on_llm_error(self, err: str):
+        self.hideTyping()
         self.busy = False
         self.send_btn.setEnabled(True)
         self.send_btn.setText("Send")
@@ -1542,22 +1789,46 @@ class AssistantApp(QWidget):
 
     def display_and_speak_response(self, text: str, speak_text: str = None):
         formatted_text = text.replace("\n", "<br>")
-        self.chat.append(f"<div style='color: #a5d6a7;'><b>VCMtalker:</b> {formatted_text}</div><br>")
-        self.scroll_to_bottom()
-        self.speak_bg(speak_text or text)
 
+        self.addBubble(
+            "🤖 VCM AI",
+            formatted_text,
+            False
+        )
+
+        self.speak_bg(speak_text or text)
+        QApplication.processEvents()
+
+        self.chatArea.ensureVisible(
+            0,
+            999999
+        )
     def speak_bg(self, text: str):
 
         if not self.voice_enabled:
-            return
+           return
+
+        if hasattr(self, "tts_worker") and self.tts_worker is not None:
+            if self.tts_worker.isRunning():
+                return
 
         self.update_status("🔊 Speaking...", "#ba68c8")
 
-        self.tts_worker = TTSWorker(text=text)
+        self.tts_worker = TTSWorker(text)
+
         self.tts_worker.finished_signal.connect(
-            lambda: self.update_status("🟢 Ready", "#81c784")
+            self.on_tts_finished
         )
+
         self.tts_worker.start()
+    def on_tts_finished(self):
+
+        self.tts_worker = None
+
+        self.update_status(
+            "🟢 Ready",
+            "#81c784"
+        )
     def index_document_dialog(self):
         file_path, _ = QFileDialog.getOpenFileName(
             self, "Select Document to Index into Vector DB", "", "Documents (*.txt *.md *.docx *.pdf)"
@@ -1567,11 +1838,11 @@ class AssistantApp(QWidget):
             success, msg = self.rag_engine.index_document(file_path)
             if success:
                 self.update_status("🟢 Status: Document Indexed", "#81c784")
-                self.chat.append(f"<div style='color: #81c784;'><b>System:</b> {msg}</div><br>")
+                self.display_and_speak_response(msg)
                 self.scroll_to_bottom()
             else:
                 self.update_status("🔴 Status: Indexing Failed", "#e57373")
-                self.chat.append(f"<div style='color: #e57373;'><b>System:</b> {msg}</div><br>")
+                self.display_and_speak_response(msg)
                 self.scroll_to_bottom()
 
     def view_memories(self):
@@ -1589,15 +1860,10 @@ class AssistantApp(QWidget):
         self.hide()
 
         self.tray_manager.tray.showMessage(
-
-            "VCMtalker",
-
+           "VCMtalker",
             "Running in System Tray.",
-
             QSystemTrayIcon.Information,
-
             2000
-
         )
     
     def __del__(self):
@@ -1612,21 +1878,32 @@ class AssistantApp(QWidget):
 
 
 
-
 if __name__ == "__main__":
+    import traceback
 
-    single = SingleInstance()
+    try:
+        single = SingleInstance()
 
-    if single.already_running():
+        if single.already_running():
+            print("VCMtalker is already running.")
+            sys.exit(0)
 
-        print("VCMtalker is already running.")
+        app = QApplication(sys.argv)
 
-        sys.exit(0)
+        print("1. QApplication created")
 
-    app = QApplication(sys.argv)
+        window = AssistantApp()
 
-    window = AssistantApp()
+        print(window.isVisible())
 
-    window.show()
+        print("2. AssistantApp created")
 
-    sys.exit(app.exec_())
+        window.show()
+
+        print("3. Window shown")
+
+        sys.exit(app.exec_())
+
+    except Exception:
+        traceback.print_exc()
+        input("Press Enter...")

@@ -3,6 +3,7 @@ import speech_recognition as sr
 import pyttsx3
 from langchain_ollama import OllamaLLM
 import pythoncom
+import pythoncom
 
 pythoncom.CoInitialize()
 
@@ -115,13 +116,13 @@ class TTSWorker(QThread):
 
     def run(self):
 
-        if not self._running:
-
-            self.finished_signal.emit()
-
-            return
+        pythoncom.CoInitialize()
 
         try:
+
+            if not self._running:
+               self.finished_signal.emit()
+               return
 
             clean = (
                 self.text
@@ -135,15 +136,8 @@ class TTSWorker(QThread):
 
             engine = pyttsx3.init()
 
-            engine.setProperty(
-                "rate",
-                180
-            )
-
-            engine.setProperty(
-                "volume",
-                1
-            )
+            engine.setProperty("rate", 180)
+            engine.setProperty("volume", 1)
 
             engine.say(clean)
 
@@ -155,6 +149,8 @@ class TTSWorker(QThread):
 
             print("TTS Error:", e)
 
-        self.finished_signal.emit()
+        finally:
 
-        pythoncom.CoUninitialize()
+            pythoncom.CoUninitialize()
+
+            self.finished_signal.emit()

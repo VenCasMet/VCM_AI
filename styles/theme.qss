@@ -1,0 +1,556 @@
+/* =========================================================
+   VCM AI — PHANTOM THEME
+========================================================= */
+
+*{
+    outline:none;
+    font-family:"Segoe UI Variable";
+    font-size:10pt;
+}
+
+/* =========================================================
+   MAIN WINDOW
+========================================================= */
+
+QMainWindow,
+QWidget{
+
+    background:#090B10;
+
+    color:#F3F5F7;
+
+}
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+QLabel{
+
+    color:white;
+
+    background:transparent;
+
+}
+
+QTextEdit{
+    background:#131821;
+    color:#E8EDF5;
+    border:none;
+    border-radius:18px;
+    padding:22px;
+    font-size:15px;
+    selection-background-color:#2962FF;
+}
+
+QScrollBar:vertical{
+    background:transparent;
+    width:10px;
+    margin:8px;
+}
+
+QScrollBar::handle:vertical{
+    background:#2E3C56;
+    border-radius:5px;
+    min-height:60px;
+}
+
+QScrollBar::handle:vertical:hover{
+    background:#4FC3F7;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical{
+    height:0px;
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical{
+    background:transparent;
+}
+
+QPlainTextEdit{
+
+    background:#11151E;
+
+    border:1px solid #242B38;
+
+    border-radius:14px;
+
+    padding:12px;
+
+    color:white;
+
+}
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+QLineEdit{
+
+    background:#151B26;
+
+    border:1px solid #2A3240;
+
+    border-radius:18px;
+
+    padding:12px 16px;
+
+    color:white;
+
+    font-size:11pt;
+
+}
+
+QLineEdit:hover{
+
+    border:1px solid #00D4FF;
+
+}
+
+QLineEdit:focus{
+
+    border:2px solid #00E5FF;
+
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+QPushButton{
+    background:#1A2230;
+    border:1px solid #2F3C52;
+    border-radius:14px;
+    color:white;
+    padding:10px 18px;
+    font-weight:600;
+}
+
+QPushButton:hover{
+    background:#243248;
+    border:1px solid #4FC3F7;
+}
+
+QPushButton:pressed{
+    background:#10161F;
+}
+
+
+/* =========================================================
+   COMBO BOX
+========================================================= */
+
+QComboBox{
+    background:#161D28;
+    border:1px solid #2D394F;
+    border-radius:12px;
+    padding:8px;
+    color:white;
+}
+
+QComboBox:hover{
+
+    border:1px solid #00E5FF;
+
+}
+
+QComboBox QAbstractItemView{
+
+    background:#11151E;
+
+    color:white;
+
+    border:1px solid #00D4FF;
+
+    selection-background-color:#00D4FF;
+
+    selection-color:black;
+
+}
+
+/* =========================================================
+   LISTS
+========================================================= */
+
+QListWidget{
+
+    background:#11151E;
+
+    border:none;
+
+    color:white;
+
+}
+
+QListWidget::item{
+
+    padding:12px;
+
+    border-radius:8px;
+
+}
+
+QListWidget::item:hover{
+
+    background:#1C2433;
+
+}
+
+QListWidget::item:selected{
+
+    background:#00D4FF;
+
+    color:black;
+
+}
+
+/* =========================================================
+   SCROLL BAR
+========================================================= */
+
+QScrollBar:vertical{
+
+    background:#090B10;
+
+    width:10px;
+
+    border:none;
+
+}
+
+QScrollBar::handle:vertical{
+
+    background:#2E3748;
+
+    border-radius:5px;
+
+}
+
+QScrollBar::handle:vertical:hover{
+
+    background:#00D4FF;
+
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical{
+
+    height:0;
+
+}
+
+QScrollBar::add-page:vertical,
+QScrollBar::sub-page:vertical{
+
+    background:none;
+
+}
+
+/* =========================================================
+   TOOLTIP
+========================================================= */
+
+QToolTip{
+
+    background:#11151E;
+
+    color:white;
+
+    border:1px solid #00E5FF;
+
+    padding:8px;
+
+}
+/* =========================================================
+   CUSTOM TITLE BAR
+========================================================= */
+
+#TitleBar{
+
+    background:#11151E;
+
+    border-bottom:1px solid #262D39;
+
+}
+
+#WindowTitle{
+
+    color:white;
+
+    font-size:12pt;
+
+    font-weight:700;
+
+}
+
+#StatusOnline{
+
+    color:#00FF88;
+
+    font-weight:700;
+
+}
+
+#TitleBar QPushButton{
+
+    background:transparent;
+
+    border:none;
+
+    color:white;
+
+    font-size:12pt;
+
+    border-radius:8px;
+
+}
+
+#TitleBar QPushButton:hover{
+
+    background:#1E293B;
+
+}
+
+#TitleBar QPushButton:last-child:hover{
+
+    background:#D32F2F;
+
+    color:white;
+
+}
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+#Sidebar{
+
+    background:#11151E;
+
+    border-right:1px solid #242B38;
+
+}
+
+#SidebarLogo{
+
+    color:#00E5FF;
+
+    font-size:18pt;
+
+    font-weight:700;
+
+    padding-bottom:20px;
+
+}
+
+#SidebarButton{
+
+    background:#151B26;
+
+    border:1px solid #293241;
+
+    border-radius:18px;
+
+    font-size:18pt;
+
+    color:white;
+
+}
+
+#SidebarButton:hover{
+
+    border:1px solid #00E5FF;
+
+    background:#1D2635;
+
+}
+
+#SidebarButton:pressed{
+
+    background:#00D4FF;
+
+    color:black;
+
+}
+/* =========================================================
+   COMMAND BAR
+========================================================= */
+
+#CommandBar{
+
+    background:#11151E;
+
+    border:1px solid #242B38;
+
+    border-radius:22px;
+
+}
+
+#CommandInput{
+
+    background:transparent;
+
+    border:none;
+
+    color:white;
+
+    font-size:11pt;
+
+    padding-left:12px;
+
+}
+
+#CommandInput:focus{
+
+    border:none;
+
+}
+
+#RoundButton{
+
+    background:#151B26;
+
+    border:1px solid #293241;
+
+    border-radius:23px;
+
+    color:white;
+
+    font-size:14pt;
+
+}
+
+#RoundButton:hover{
+
+    border:1px solid #00E5FF;
+
+    background:#1E2736;
+
+}
+
+#RoundButton:pressed{
+
+    background:#00D4FF;
+
+    color:black;
+
+}
+/* =========================================================
+   CHAT BUBBLES
+========================================================= */
+
+#AssistantBubble{
+
+    background:#151B26;
+
+    border:1px solid #2A3240;
+
+    border-radius:18px;
+
+}
+
+#AssistantBubble QLabel{
+
+    color:white;
+
+    font-size:10.5pt;
+
+}
+
+#UserBubble{
+
+    background:#00D4FF;
+
+    border:none;
+
+    border-radius:18px;
+
+}
+
+#UserBubble QLabel{
+
+    color:black;
+
+    font-size:10.5pt;
+
+    font-weight:600;
+
+}
+/* =========================================================
+   TOOL CARD
+========================================================= */
+
+#ToolCard{
+
+    background:#121722;
+
+    border:1px solid #283243;
+
+    border-radius:18px;
+
+}
+
+#ToolTitle{
+
+    color:white;
+
+    font-size:11pt;
+
+    font-weight:700;
+
+}
+
+#ToolIcon{
+
+    font-size:16pt;
+
+}
+
+#ToolStatus{
+
+    color:#00FF88;
+
+    font-weight:700;
+
+}
+
+#ToolMessage{
+
+    color:#D8DEE9;
+
+    padding-top:8px;
+
+}
+
+#userBubble{
+    background:#2D6BFF;
+    border-radius:18px;
+}
+
+#aiBubble{
+    background:#1C2433;
+    border:1px solid #33435B;
+    border-radius:18px;
+}
+
+#bubbleHeader{
+    color:#82CFFF;
+    font-weight:700;
+    font-size:13px;
+}
+
+#userBubble QLabel{
+    color:white;
+}
+
+#aiBubble QLabel{
+    color:#F2F5FA;
+}
+#chatTitle{
+    color:#FFFFFF;
+    font-size:22px;
+    font-weight:700;
+    padding-left:10px;
+    padding-bottom:8px;
+}

@@ -94,3 +94,6 @@ test-results/
 # Backup Files
 # ==========================================
 backup.py
+
+memory.txt
+AI_TEST/

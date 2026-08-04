@@ -1,5 +1,7 @@
 import re
 
+from click import command
+
 from core.browser_router import BrowserRouter
 from core.search_router import SearchRouter
 from core.system_router import SystemRouter
@@ -59,6 +61,7 @@ class IntentRouter:
             return routed
 
         if BrowserRouter.matches(command):
+            
 
             routed = BrowserRouter.route(command)
 
@@ -146,43 +149,22 @@ class IntentRouter:
 
             )
 
-        ai_result = self.ai_parser.parse(
-
-            command
-
-        )
+        ai_result = self.ai_parser.parse(command)
 
         if ai_result:
 
-            intent = ai_result.get(
-
-                "intent"
-
-            )
+            intent = ai_result.get("intent")
 
             if intent:
 
-                payload = dict(
+                payload = dict(ai_result)
 
-                    ai_result
+                payload.pop("intent", None)
 
-                )
+                if intent == "RAG_QUERY" and "query" not in payload:
+                   payload["query"] = command
 
-                payload.pop(
-
-                    "intent",
-
-                    None
-
-                )
-
-                return (
-
-                    intent,
-
-                    payload
-
-                )
+            return (intent, payload)
 
         return (
 
