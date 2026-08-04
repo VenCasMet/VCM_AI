@@ -113,8 +113,9 @@ class AssistantApp(QWidget):
             self.model_selector.currentText()
         )
         icon_path = os.path.join(
-        os.path.dirname(__file__),
-        "VCMtalker.ico"
+           os.path.dirname(__file__),
+            "assets",
+            "VCMtalker.ico"
         )
 
         self.tray_manager.create(
