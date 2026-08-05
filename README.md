@@ -1,342 +1,706 @@
-## 🤖 VCMtalker AI Assistant
+<div align="center">
 
-🧠 A standalone offline desktop AI agent for Windows with voice interaction, local LLM intelligence, long-term memory, smart file search, and system automation — distributed as a professional installer.
+# 🤖 VCMtalker AI
 
-Setup Install-
-        
-        https://github.com/VenCasMet/VCM_AI/releases/download/v1.0/VCM_Setup.exe
-## 🏆 Overview
+### Your Personal Offline AI Desktop Assistant
 
-VCMtalker AI Assistant is a fully functional Windows desktop application that brings conversational AI directly to the user’s computer without relying on cloud APIs.
+An intelligent Windows desktop AI assistant powered entirely by **local Large Language Models**, featuring voice interaction, Retrieval-Augmented Generation (RAG), persistent memory, browser automation, and system automation — all running completely on your own machine.
 
-Powered by a local language model via Ollama, the assistant can understand natural language commands, perform system actions, remember information across sessions, search files, monitor system resources, and interact through both text and voice.
+---
 
-The application is packaged as a native Windows installer, allowing it to be installed and used like commercial software.
+![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python)
+![PyQt5](https://img.shields.io/badge/PyQt5-GUI-green?style=for-the-badge)
+![Ollama](https://img.shields.io/badge/Ollama-Local%20LLM-black?style=for-the-badge)
+![LangChain](https://img.shields.io/badge/LangChain-RAG-success?style=for-the-badge)
+![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector%20Database-orange?style=for-the-badge)
+![Windows](https://img.shields.io/badge/Windows-10%20%7C%2011-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/License-Educational-red?style=for-the-badge)
 
-## ✨ Key Features
+---
 
-🧠 Natural Language Command Understanding
+### 🚀 Latest Release
 
-Interact using plain English instead of rigid commands.
+Download the latest installer from GitHub Releases
+
+**➡️ https://github.com/VenCasMet/VCM_AI/releases/latest**
+
+---
+
+</div>
+
+# 📑 Table of Contents
+
+- Overview
+- Features
+- Why VCMtalker AI?
+- Architecture
+- Screenshots
+- Installation
+- Running from Source
+- Tech Stack
+- Project Structure
+- Example Commands
+- Privacy
+- Future Roadmap
+- Author
+- License
+
+---
+
+# 🏆 Overview
+
+VCMtalker AI is a fully offline desktop AI assistant designed for Windows.
+
+Unlike traditional AI assistants that depend on cloud APIs, VCMtalker performs inference locally using **Ollama**, allowing users to interact with an intelligent assistant while maintaining complete privacy.
+
+The assistant combines:
+
+- Local Large Language Models
+- Voice Interaction
+- Long-Term Memory
+- Retrieval-Augmented Generation (RAG)
+- Browser Automation
+- File Search
+- Desktop Automation
+- Modern Desktop UI
+
+Everything runs locally on the user's machine.
+
+No OpenAI API.
+
+No Gemini API.
+
+No Anthropic API.
+
+No cloud dependency after setup.
+
+---
+
+# ✨ Features
+
+## 🧠 Local AI Assistant
+
+Powered by Ollama with the **Qwen2.5** language model.
+
+- Fully offline
+- Natural conversation
+- Context-aware responses
+- Zero cloud inference
+
+---
+
+## 🎤 Voice Interaction
+
+Supports full voice conversations.
+
+Features include:
+
+- Speech Recognition
+- Text-to-Speech
+- Push-to-talk interaction
+- Natural AI responses
+
+
+---
+
+## 📚 Retrieval-Augmented Generation (RAG)
+
+Ask questions about your own documents.
+
+Supported formats include:
+
+- PDF
+- DOCX
+- TXT
+- Markdown
+- Python Files
+
+Documents are automatically indexed into ChromaDB.
+
+The assistant retrieves only the most relevant information before answering.
+
+---
+
+## 🌐 Browser Automation
+
+Control your browser using natural language.
 
 Examples:
 
-“Open calculator”
+- Search Google
+- Open websites
+- Perform web automation
+- Read webpages
 
-“Search Google for machine learning roadmap”
+---
 
-“Find file resume”
+## 📂 Smart File Search
 
-“What is CPU usage?”
-
-🎤 Voice Interaction
-
-Speech recognition via microphone
-
-Text-to-speech responses
-
-🟢 Always-Listening Mode
-
-Continuous voice interaction without pressing buttons.
-
-💾 Long-Term Memory
-
-Remembers user-provided information across sessions.
+Search files using plain English.
 
 Examples:
 
-“Remember my name is Piyush”
+- Find my resume
+- Search project report
+- Open presentation
 
-“What do you remember?”
+---
 
-Memory is stored locally for privacy.
+## ⚙️ System Automation
 
-📂 Smart File & Folder Search
+Control Windows using natural language.
 
-Search the system for files using natural language.
+Examples:
 
-📊 System Monitoring
+- Open Calculator
+- Open Notepad
+- Open Chrome
+- Open Settings
+- Shutdown
+- Restart
 
-Provides real-time CPU and RAM usage.
+---
 
-🌐 Web & Application Automation
+## 📊 System Monitoring
 
-Launch applications
+Real-time information including:
 
-Open browser
+- CPU Usage
+- RAM Usage
+- Disk Usage
+- System Status
 
-Perform Google searches
+---
 
-🔒 Offline & Privacy-Focused AI
+## 🔒 Completely Offline
 
-Runs entirely on the user’s machine using a local LLM.
+After the initial setup:
 
-No cloud calls required.
+✅ Internet is NOT required.
 
-🖥️ Modern Desktop UI
+Everything runs locally.
 
-Glass-style dark interface
+No user data leaves the computer.
 
-Chat-based interaction
+---
 
-Native window controls
+## 📦 Professional Installer
 
-📦 Professional Installer
+The application includes a modern setup wizard capable of:
 
-Distributed as a Windows setup executable with:
+- Checking Internet connectivity
+- Installing Ollama automatically
+- Downloading AI models automatically
+- Configuring local storage
+- Preparing the assistant
+- Launching the application
 
-Install wizard
+No manual configuration is required for most users.
 
-Desktop shortcut
+---
 
-Start Menu entry
+# 🏗️ Architecture
 
-Uninstall support
+VCMtalker AI follows a modular architecture designed for scalability, maintainability, and complete offline execution.
 
-## 🧩 Architecture
+```
+                           User
+                     (Voice / Text)
+                            │
+                            ▼
+                    VCMtalker Desktop UI
+                      (PyQt5 Interface)
+                            │
+                            ▼
+                 Natural Language Processing
+                            │
+        ┌───────────────────┼───────────────────┐
+        ▼                   ▼                   ▼
+   System Tools       Browser Tools       Memory Engine
+        │                   │                   │
+        ▼                   ▼                   ▼
+ Windows APIs        Playwright          ChromaDB Vector Store
+                                                │
+                                                ▼
+                                        Ollama Embeddings
+                                                │
+                                                ▼
+                                         Local LLM (Qwen2.5)
+```
 
-    User (Text / Voice)
-            ↓
-    Command Processing Engine
-            ↓
-     ┌───────────────┬────────────────┐
-     │ System Tools  │ Local AI Model │
-     └───────────────┴────────────────┘
-            ↓
-     Response → UI + Speech Output
-    
-## 🛠️ Tech Stack
 
-Core Application
+---
 
-Python 3
+# 🚀 Installation
 
-PyQt5 — GUI framework
+## Method 1 — Recommended (Windows Installer)
 
-PyInstaller — executable packaging
+Download the latest installer from the Releases page.
 
-Inno Setup — installer creation
+```
+https://github.com/VenCasMet/VCM_AI/releases/latest
+```
 
-AI & NLP
+Run:
 
-Ollama — local LLM runtime
+```
+VCM_AI_Setup_v2.0.exe
+```
 
-Gemma 2B — language model
+The setup wizard automatically performs:
 
-LangChain-Ollama — integration layer
+- Internet connectivity check
+- Ollama installation (if missing)
+- AI model verification
+- Automatic model download
+- Local configuration
+- Environment preparation
 
-Voice
+After setup completes, the assistant launches automatically.
 
-SpeechRecognition — speech-to-text
+---
 
-PyAudio — microphone input
+## First Launch
 
-pyttsx3 — offline text-to-speech
+During the first launch the setup wizard checks:
 
-System Integration
+- Internet
+- Ollama
+- Qwen2.5 Model
+- nomic-embed-text Embedding Model
 
-psutil — system monitoring
+If everything is already installed, setup completes within seconds.
 
-subprocess — app launching
+---
 
-os / webbrowser — file & web operations
+# 💻 Running From Source
 
-## ⚙️ Requirements
-System
+Clone the repository:
 
-Windows 10 or 11
+```bash
+git clone https://github.com/VenCasMet/VCM_AI.git
+cd VCM_AI
+```
 
-Microphone (for voice features)
+Install dependencies:
 
-Internet required only for initial setup
+```bash
+pip install -r requirements.txt
+```
 
-AI Engine
+Run the application:
 
-Ollama must be installed with the required model.
+```bash
+python VCMtalker.py
+```
 
-## 🚀 Installation (Recommended)
+---
 
-Step 1 — Install the Application
+# 🛠️ Tech Stack
 
-Download the latest installer from the Releases page:
+## Programming Language
 
-     VCM_Setup.exe
+- Python
 
-Run the installer and follow the wizard.
+---
 
-Step 2 — Install Ollama
+## Desktop Framework
 
-Download from:
+- PyQt5
 
-     https://ollama.com
+---
 
-Install normally.
+## Artificial Intelligence
 
-Step 3 — Download AI Model
+- Ollama
+- Qwen2.5
+- nomic-embed-text
+- LangChain
+- ChromaDB
 
-Open Command Prompt and run:
+---
 
-    ollama pull gemma:2b
+## Voice Processing
 
-Step 4 — Launch the Assistant
+- SpeechRecognition
+- PyAudio
+- pyttsx3
 
-Open from:
+---
 
-Desktop shortcut
+## Browser Automation
 
-or
+- Playwright
 
-Start Menu
+---
 
-## 💻 Running From Source Code
+## Document Processing
 
-For developers or customization.
+- python-docx
+- pypdf
 
-1️⃣ Clone Repository
+---
 
-    git clone https://github.com/yourusername/VCMtalker-AI.git
-    cd VCMtalker-AI
+## Packaging
 
-2️⃣ Install Dependencies
+- PyInstaller
+- Inno Setup
 
-    pip install -r requirements.txt
+---
 
+## Storage
 
-If voice features fail:
+- ChromaDB
+- Local AppData Storage
+- JSON Configuration
 
-    pip install pipwin
-    pipwin install pyaudio
+---
 
-3️⃣ Ensure Ollama is Running
+# 📂 Project Structure
 
-Install Ollama and pull the model:
+```
+VCM_AI/
 
-    ollama pull gemma:2b
+│
+├── assets/
+├── core/
+├── installers/
+├── styles/
+├── tools/
+├── ui/
+├── widgets/
+│
+├── VCMtalker.py
+├── rag_engine.py
+├── requirements.txt
+├── build.bat
+├── README.md
+│
+└── .gitignore
+```
 
-4️⃣ Run Application
+The application stores runtime data inside:
 
-    python VCMtalker.py
+```
+C:\Users\<Username>\AppData\Local\VCM AI\
+```
 
-## 🧠 Example Commands
+including:
 
-System & Apps
+- setup configuration
+- vector database
+- memory storage
 
--Open notepad
+---
 
--Open calculator
+# 💬 Example Commands
 
--Open chrome
+VCMtalker AI understands natural language instead of rigid command syntax.
 
-Web
+## 🧠 General Conversation
 
--Search Google artificial intelligence roadmap
+```
+Hello
 
--Search Google Python tutorials
+Who are you?
 
-Memory
+How can you help me?
 
--Remember my favorite language is Python
+Explain Machine Learning.
 
--What do you remember?
+What is Retrieval-Augmented Generation?
 
-Files
+Plan a Python learning roadmap.
+```
 
--Find file resume
 
--Search file project report
+
+## 📂 File Search
+
+```
+Find my resume.
+
+Search project report.
+
+Locate README.md.
+
+Open presentation.
+
+Find PDF files.
+```
+
+---
+
+## 🌐 Browser Commands
+
+```
+Open Google.
+
+Search GitHub.
+
+Search Google for LangChain.
+
+Open YouTube.
+
+Open Stack Overflow.
+```
+
+---
+
+## ⚙️ System Commands
+
+```
+Open Calculator.
+
+Open Notepad.
+
+Open Settings.
+
+Shutdown the computer.
+
+Restart the computer.
+```
+
+---
+
+## 📊 System Monitoring
+
+```
+CPU Usage
+
+RAM Usage
 
 System Status
 
--Status
+Disk Usage
+```
 
--CPU usage
+---
 
--RAM usage
+## 📚 Document Assistant
 
-Conversational
+```
+Index this PDF.
 
--Explain neural networks
+Search my documentation.
 
--Plan a study schedule
+Summarize this report.
 
-## 📂 Project Structure
+Answer questions from my document.
+```
 
-    VCMtalker-AI/
-    │
-    ├── VCMtalker.py        # Main application
-    ├── memory.txt          # Persistent memory storage
-    ├── VCMtalker.ico       # Application icon
-    ├── install_ollama.bat  # Optional AI engine installer
-    ├── requirements.txt    # Dependencies
-    ├── README.md           # Documentation
-    └── dist/               # Built executable (not tracked)
+---
 
-## 🔐 Privacy
+# 🚀 AI Capabilities
 
-All processing occurs locally
+VCMtalker AI combines multiple AI techniques into a single desktop assistant.
 
-No cloud AI APIs required
+### Local Large Language Model
 
-Memory stored on device
+Powered by:
 
-No data collection
+- Ollama
+- Qwen2.5
 
-## 🎯 Use Cases
+---
 
-Personal productivity assistant
+### Retrieval-Augmented Generation (RAG)
 
-Offline AI companion
+The assistant retrieves only relevant document chunks before generating responses, improving factual accuracy while remaining completely offline.
 
-System automation tool
+---
 
-Educational AI project
+### Semantic Memory
 
-Demonstration of local AI capabilities
+Long-term memory is stored using vector embeddings, allowing contextual retrieval instead of simple keyword matching.
 
-## 🏆 Skills Demonstrated
+---
 
-This project showcases:
+### Natural Language Understanding
 
--Desktop software development
+Users interact naturally without learning predefined commands.
 
--AI integration with local models
+---
 
--Voice interface design
+### Voice Interaction
 
--Natural language command processing
+Supports conversational interaction through speech recognition and offline text-to-speech.
 
--System-level programming
+---
 
--UI/UX implementation
+# 🔐 Privacy
 
--Software packaging & deployment
+Privacy is one of the core design principles of VCMtalker AI.
 
-## 🚧 Future Enhancements
+✔ Runs locally
 
-Potential improvements:
+✔ No cloud inference
 
--Wake-word detection
+✔ No OpenAI API
 
--Autonomous task execution
+✔ No Gemini API
 
--Multi-agent architecture
+✔ No external data collection
 
--Knowledge base integration
+✔ Local vector database
 
--Screen awareness
+✔ Local memory storage
 
--Cross-platform support
+✔ User data never leaves the device
 
--Plugin ecosystem
+---
 
-## 👨‍💻 Author
+# ⚡ Performance
 
-Piyush Sharma
+Designed for efficient local execution.
 
-## 📄 License
+- Fast startup
+- Local inference
+- Persistent vector database
+- Automatic dependency verification
+- Intelligent setup wizard
+- Optimized document indexing
 
-This project is provided for educational and demonstration purposes.
+---
 
-## ⭐ Final Note
+# 🎯 Use Cases
 
-If you found this project interesting, consider giving it a ⭐ on GitHub.
+VCMtalker AI can be used for:
+
+- Personal AI Assistant
+- Offline AI Companion
+- Desktop Automation
+- Software Development
+- Learning Assistant
+- Research Assistant
+- Productivity Enhancement
+- AI Demonstrations
+- Academic Projects
+- Portfolio Showcase
+
+---
+
+# 🏆 Skills Demonstrated
+
+This project demonstrates practical experience with:
+
+### Software Engineering
+
+- Desktop Application Development
+- Object-Oriented Programming
+- Modular Software Architecture
+- Windows Application Development
+
+---
+
+### Artificial Intelligence
+
+- Local LLM Integration
+- Retrieval-Augmented Generation (RAG)
+- Vector Databases
+- Semantic Search
+- Embeddings
+- Contextual Memory
+
+---
+
+### Python Development
+
+- PyQt5
+- Multithreading
+- File Handling
+- Exception Handling
+- Packaging
+- Automation
+
+---
+
+### DevOps & Deployment
+
+- PyInstaller
+- Inno Setup
+- Windows Installer Development
+- Dependency Management
+- Release Engineering
+
+---
+
+# 🛣️ Roadmap
+
+Future improvements planned:
+
+- Wake Word Detection
+- Multi-Agent Architecture
+- Vision Support
+- Image Understanding
+- Local Code Assistant
+- Plugin Marketplace
+- Workflow Automation
+- Cross-Platform Support
+- Linux Build
+- macOS Build
+- Automatic Updates
+- Cloud Synchronization (Optional)
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome.
+
+If you would like to improve VCMtalker AI:
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Open a Pull Request
+
+Bug reports and feature suggestions are always appreciated.
+
+---
+
+# 📄 License
+
+This project is released for educational and demonstration purposes.
+
+Please contact the author for commercial licensing or collaboration.
+
+---
+
+# 👨‍💻 Author
+
+## **Piyush Sharma**
+
+AI • Python • Desktop Applications • Automation • Full Stack Development
+
+GitHub:
+
+https://github.com/VenCasMet
+
+---
+
+# ⭐ Support
+
+If you found this project useful:
+
+⭐ Star the repository
+
+🍴 Fork it
+
+🐛 Report issues
+
+💡 Suggest new features
+
+Your support helps improve the project.
+
+---
+
+<div align="center">
+
+# Thank You ❤️
+
+### Built with Python, Ollama, LangChain and lots of ☕
+
+**VCMtalker AI — Bringing Local AI to the Desktop**
+
+</div>
