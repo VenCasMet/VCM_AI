@@ -13,8 +13,21 @@ from chromadb.utils import embedding_functions
 # Document loaders
 import docx
 import pypdf
+import os
 
-PERSIST_DIR = os.path.join(os.path.dirname(__file__), "vector_db")
+APP_NAME = "VCM AI"
+
+APPDATA_DIR = os.path.join(
+    os.getenv("LOCALAPPDATA"),
+    APP_NAME
+)
+
+PERSIST_DIR = os.path.join(
+    APPDATA_DIR,
+    "vector_db"
+)
+
+os.makedirs(PERSIST_DIR, exist_ok=True)
 
 
 class ONNXEmbeddings:
@@ -77,7 +90,7 @@ class RAGEngine:
         self.memory_store.add_documents([doc])
         
         # Also append to memory.txt for backward compatibility
-        memory_file = os.path.join(os.path.dirname(__file__), "memory.txt")
+        memory_file = os.path.join(APPDATA_DIR, "memory.txt")
         try:
             with open(memory_file, "a", encoding="utf-8") as f:
                 f.write(memory_text + "\n")
@@ -97,7 +110,7 @@ class RAGEngine:
 
     def get_all_memories(self) -> List[str]:
         """Returns all raw memories stored in vector store or fallback file."""
-        memory_file = os.path.join(os.path.dirname(__file__), "memory.txt")
+        memory_file = os.path.join(APPDATA_DIR, "memory.txt")
         if os.path.exists(memory_file):
             with open(memory_file, "r", encoding="utf-8") as f:
                 lines = [line.strip() for line in f.readlines() if line.strip()]

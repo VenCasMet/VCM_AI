@@ -34,6 +34,8 @@ from PyQt5.QtWidgets import (
 from widgets.chat_bubble import ChatBubble
 from PyQt5.QtCore import QPropertyAnimation
 from PyQt5.QtCore import QTimer
+from ui.setup_window import SetupWindow
+from core.setup_manager import SetupManager
 
 class AssistantApp(QWidget):
 
@@ -1869,34 +1871,63 @@ border-radius:12px;
 
             pass
 
+assistant_window = None
+
+def launch_assistant():
+
+    global assistant_window
+
+    assistant_window = AssistantApp()
+
+    assistant_window.show()
 
 
 if __name__ == "__main__":
+
     import traceback
 
     try:
+
         single = SingleInstance()
 
         if single.already_running():
+
             print("VCMtalker is already running.")
+
             sys.exit(0)
 
         app = QApplication(sys.argv)
 
         print("1. QApplication created")
 
-        window = AssistantApp()
+        setup = SetupManager()
 
-        print(window.isVisible())
+        ####################################################
+        # First Launch
+        ####################################################
 
-        print("2. AssistantApp created")
+        if not setup.is_completed():
+
+            print("Launching Setup Window")
+
+            window = SetupWindow(
+                launch_callback=launch_assistant
+            )
+
+        else:
+
+            print("Launching Assistant")
+
+            window = AssistantApp()
+
+        ####################################################
 
         window.show()
-
-        print("3. Window shown")
 
         sys.exit(app.exec_())
 
     except Exception:
+
         traceback.print_exc()
+
         input("Press Enter...")
